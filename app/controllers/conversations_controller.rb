@@ -1,28 +1,72 @@
 # frozen_string_literal: true
 
 class ConversationsController < ApplicationController
-  includes Authorization
+  include Authorization
+
+  before_action :validate_conversation_access, only: %i[show messages]
 
   def index
-    conversations_ids = ConversationMembership.where(user_id: Current.user.id)
-                                              .distinct
-                                              .pluck(:conversation_id)
-
-    conversations = Conversation.includes(conversation_memberships: :user)
-                                .where(conversations_ids)
-                                .order(created_at: :desc)
-    json_response conversations
+    load_conversations
+    json_response conversations_response
   end
 
   def show
-    conversation = Conversation.find params[:id]
-    json_response conversation
+    load_conversation
+    json_response conversation_response
   end
 
   def messages
-    messages = ChatMessage.includes(conversation_membership: :user)
-                          .where(conversation_id: params[:id])
-                          .order(created_at: :desc)
-    json_response messages
+    load_messages
+    touch_accessed_at
+    json_response messages_response
+  end
+
+  private
+
+  def load_conversations
+    @conversations = Conversation
+                     .includes(:conversation_memberships, chat_messages: :user)
+                     .where(
+                       id: ConversationMembership
+                             .current_user.is_a_member
+                             .distinct
+                             .pluck(:conversation_id)
+                       )
+  end
+
+  def load_conversation
+    @conversation = Conversation.find(@conversation_id)
+  end
+
+  def load_messages
+    @messages = ChatMessage.includes(:user)
+                           .where(conversation_id: @conversation_id)
+  end
+
+  def validate_conversation_access
+    conversation = Conversation.find(params[:id])
+    @conversation_id = conversation.id if owner? conversation.user_id
+  end
+
+  def touch_accessed_at
+    membership = ConversationMembership.where(conversation_id: @conversation_id)
+                                       .current_user
+                                       .first
+    return unless membership.present?
+
+    membership.last_accessed_at = Time.now
+    membership.save!
+  end
+
+  def conversations_response
+    @conversations
+  end
+
+  def conversation_response
+    @conversation.as_json({ except: %i[unread_count last_message user_id created_at updated_at] })
+  end
+
+  def messages_response
+    @messages.map(&:include_message)
   end
 end

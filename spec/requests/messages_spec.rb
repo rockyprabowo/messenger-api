@@ -10,7 +10,26 @@ RSpec.describe 'Messages API', type: :request do
   let(:samid) { create(:user) }
   let(:samid_headers) { valid_headers(samid.id) }
 
-  # TODO: create conversation between Dimas and Agus, then set convo_id variable
+  let(:root_conversation) { create(:conversation, user: dimas) }
+  let(:user_conversation) do
+    {
+      conversation: root_conversation,
+      members: [
+        create(:conversation_membership, user: dimas, conversation: root_conversation),
+        create(:conversation_membership, user: agus, conversation: root_conversation)
+      ]
+    }
+  end
+
+  let(:convo_id) { root_conversation.id }
+
+  let(:conversation_messages) do
+    rand(2..5).times.each do
+      create(:chat_message,
+             conversation: user_conversation[:conversation],
+             conversation_membership: user_conversation[:members].sample)
+    end
+  end
 
   describe 'get list of messages' do
     context 'when user have conversation with other user' do
@@ -35,7 +54,6 @@ RSpec.describe 'Messages API', type: :request do
     end
 
     context 'when user try to access conversation not belong to him' do
-      # TODO: create conversation and set convo_id variable
       before { get "/conversations/#{convo_id}/messages", params: {}, headers: samid_headers }
 
       it 'returns error 403' do
@@ -44,7 +62,6 @@ RSpec.describe 'Messages API', type: :request do
     end
 
     context 'when user try to access invalid conversation' do
-      # TODO: create conversation and set convo_id variable
       before { get '/conversations/-11/messages', params: {}, headers: samid_headers }
 
       it 'returns error 404' do

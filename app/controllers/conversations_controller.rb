@@ -35,7 +35,8 @@ class ConversationsController < ApplicationController
   end
 
   def load_conversation
-    @conversation = Conversation.find(@conversation_id)
+    @conversation = Conversation.includes(:user)
+                                .find(@conversation_id)
   end
 
   def load_messages

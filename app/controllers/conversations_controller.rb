@@ -45,7 +45,10 @@ class ConversationsController < ApplicationController
 
   def validate_conversation_access
     conversation = Conversation.find(params[:id])
-    @conversation_id = conversation.id if owner? conversation.user_id
+    @conversation_id = conversation.id if owner?(conversation) do |c|
+      c.user_id == Current.user.id ||
+      c.conversation_memberships.select { |cm| cm.user_id == Current.user.id }.present?
+    end
   end
 
   def touch_accessed_at

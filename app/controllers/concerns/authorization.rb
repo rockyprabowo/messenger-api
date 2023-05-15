@@ -15,10 +15,10 @@ module Authorization
       Current.user = auth[:user]
     end
 
-    def owner?(object_owner_id)
-      return true unless Current.user.id != object_owner_id
+    def owner?(object, &block)
+      return true if block.call(object)
 
-      raise(Authorization::AccessForbidden, 'access denied')
+      raise(Authorization::AccessForbidden, 'Access denied. No access to resource.')
     end
   end
 

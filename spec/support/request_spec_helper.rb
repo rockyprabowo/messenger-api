@@ -15,6 +15,6 @@ module RequestSpecHelper
       e.message << "\n#{JSON.pretty_generate(response_body)}"
       raise e
     end
-    expect(response_body).to eq(json.with_indifferent_access) if json
+    expect(response_body).to be_json_representation_of(json.with_indifferent_access) if json
   end
 end

@@ -55,11 +55,11 @@ RSpec.describe 'Messages API', type: :request do
 
   describe 'send message' do
     let(:valid_attributes) do
-      { message: 'Hi there!', user_id: agus.id }
+      { message: 'Hi there!', user_id: agus.id }.to_json
     end
 
     let(:invalid_attributes) do
-      { message: '', user_id: agus.id }
+      { message: '', user_id: agus.id }.to_json
     end
 
     context 'when request attributes are valid' do

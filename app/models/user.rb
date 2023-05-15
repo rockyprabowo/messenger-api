@@ -4,8 +4,10 @@ class User < ApplicationRecord
   # encrypt password
   has_secure_password
 
-  validates :email, uniqueness: true
-  validates :name, presence: true
+  validates :email, presence: true, uniqueness: true, format: { with: URI::MailTo::EMAIL_REGEXP,
+                                                                message: 'must be a valid e-mail' }
+  validates :name, presence: true, length: { minimum: 2 }
+  validates :password, presence: true, length: { in: 6..32 }
 
   has_many :conversations
   has_many :conversation_memberships

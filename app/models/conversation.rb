@@ -22,7 +22,7 @@ class Conversation < ApplicationRecord
 
   def with_user
     users.reject { |m| m.id == Current.user.id }
-         .first
+         .first || Current.user
   end
 
   def last_message

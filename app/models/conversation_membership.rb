@@ -6,15 +6,15 @@ class ConversationMembership < ApplicationRecord
   belongs_to :user
   has_many :chat_messages
 
-  scope :between, lambda { |users|
-    where(user_id: users)
+  scope :current_user, -> { where(user_id: Current.user.id) }
+  scope :is_a_member, -> { where(is_member: true) }
+  scope :between_users, lambda { |params|
+    where(user_id: params[:user_ids])
       .group!(:conversation_id)
-      .having('count(distinct :user_id) > ?', 1)
+      .having('count(distinct user_id) > ?', 1)
   }
-
-  scope :of, lambda { |conversation_id, user_id|
-    where(conversation_id: conversation_id).where(user_id: user_id)
+  scope :user_conversation, lambda { |params|
+    where(conversation_id: params[:conversation_id])
+      .where(user_id: params[:user_id])
   }
-
-  scope :member, -> { where(is_member: true) }
 end

@@ -69,6 +69,6 @@ class MessagesController < ApplicationController
   end
 
   def new_message_response
-    @new_message
+    @new_message.include_message
   end
 end

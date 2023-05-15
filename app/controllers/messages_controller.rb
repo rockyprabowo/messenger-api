@@ -32,6 +32,10 @@ class MessagesController < ApplicationController
     true
   end
 
+  def touch_accessed_at(membership_id)
+    ConversationMembership.find(membership_id).touch_accessed_at
+  end
+
   def obtain_user_membership
     @membership_id = ConversationMembership
                      .user_conversation(conversation_id: @existing_id, user_id: Current.user.id)
@@ -43,6 +47,7 @@ class MessagesController < ApplicationController
     @new_message = send_message(
       @existing_id, @membership_id, params[:message]
     )
+    touch_accessed_at @membership_id
   end
 
   def send_new_conversation_to(user)
@@ -58,6 +63,7 @@ class MessagesController < ApplicationController
         { conversation_id: @new_conversation.id, user_id: id }
       end)
     end
+    touch_accessed_at @new_membership.id
   end
 
   def send_message(conversation_id, membership_id, body)

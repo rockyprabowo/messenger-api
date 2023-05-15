@@ -17,7 +17,7 @@ class ConversationsController < ApplicationController
 
   def messages
     load_messages
-    touch_accessed_at
+    mark_as_read
     json_response messages_response
   end
 
@@ -51,14 +51,13 @@ class ConversationsController < ApplicationController
     end
   end
 
-  def touch_accessed_at
+  def mark_as_read
     membership = ConversationMembership.where(conversation_id: @conversation_id)
                                        .current_user
                                        .first
     return unless membership.present?
 
-    membership.last_accessed_at = Time.now
-    membership.save!
+    membership.touch_accessed_at
   end
 
   def conversations_response

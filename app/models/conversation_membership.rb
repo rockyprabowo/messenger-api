@@ -17,4 +17,9 @@ class ConversationMembership < ApplicationRecord
     where(conversation_id: params[:conversation_id])
       .where(user_id: params[:user_id])
   }
+
+  def touch_accessed_at
+    self.last_accessed_at = Time.now
+    save!
+  end
 end

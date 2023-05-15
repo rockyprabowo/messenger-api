@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class ConversationsController < ApplicationController
-  includes NeedsAuthorization
+  includes Authorization
 
   def index
     conversations_ids = ConversationMembership.where(user_id: Current.user.id)

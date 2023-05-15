@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module NeedsAuthorization
+module Authorization
   extend ActiveSupport::Concern
 
   included do

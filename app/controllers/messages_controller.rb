@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class MessagesController
+  includes Authorization
   def create
     if on_existing_conversation_with(params[:user_id])
       new_message = ChatMessage.create(

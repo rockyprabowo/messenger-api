@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_05_14_124630) do
+ActiveRecord::Schema.define(version: 2023_05_15_101005) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -20,6 +20,8 @@ ActiveRecord::Schema.define(version: 2023_05_14_124630) do
     t.text "body"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "conversation_id", null: false
+    t.index ["conversation_id"], name: "index_chat_messages_on_conversation_id"
     t.index ["conversation_membership_id"], name: "index_chat_messages_on_conversation_membership_id"
   end
 
@@ -51,6 +53,7 @@ ActiveRecord::Schema.define(version: 2023_05_14_124630) do
   end
 
   add_foreign_key "chat_messages", "conversation_memberships"
+  add_foreign_key "chat_messages", "conversations"
   add_foreign_key "conversation_memberships", "conversations"
   add_foreign_key "conversation_memberships", "users"
   add_foreign_key "conversations", "users"

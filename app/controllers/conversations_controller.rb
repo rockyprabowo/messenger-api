@@ -31,7 +31,7 @@ class ConversationsController < ApplicationController
                              .current_user.is_a_member
                              .distinct
                              .pluck(:conversation_id)
-                       )
+                     )
   end
 
   def load_conversation

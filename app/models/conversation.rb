@@ -12,6 +12,14 @@ class Conversation < ApplicationRecord
   has_many :chat_messages
   belongs_to :user
 
+  def authorize_with_user_id(user_id)
+    self.user_id == user_id ||
+      conversation_memberships
+        .select { |cm| cm.user_id == user_id }
+        .first
+        .present?
+  end
+
   def with_user
     users.reject { |m| m.id == Current.user.id }
          .first

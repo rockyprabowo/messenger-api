@@ -35,6 +35,8 @@ RSpec.describe ChatMessage, type: :model do
   end
 
   describe 'associations' do
-
+    it { should belong_to(:conversation_membership) }
+    it { should belong_to(:conversation) }
+    it { should have_one(:user).through(:conversation_membership) }
   end
 end

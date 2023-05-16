@@ -11,12 +11,34 @@ module RequestSpecHelper
     end
 
     match do |actual|
-      actual.keys == expected.keys &&
-        actual.values.map(&:class) == expected.values.map(&:class)
+      traverse_structure(actual, expected)
     end
 
     failure_message do |actual|
       "expected #{actual} to be the JSON representation of #{expected}"
+    end
+
+    def traverse_structure(actual, expected)
+      expected.each do |key, type_or_value|
+        case type_or_value
+        when Hash
+          return false unless valid_hash_key(actual, key) && traverse_structure(actual[key], type_or_value)
+        when Array
+          next if type_or_value.eql?([]) && actual[key].eql?([])
+
+          return false unless actual[key].is_a?(Array) && traverse_structure(actual[key].first, type_or_value.first)
+        else
+          begin
+            return false unless valid_hash_key(actual, key) && actual[key].is_a?(type_or_value)
+          rescue StandardError => _e
+            return false unless valid_hash_key(actual, key) && actual[key].eql?(type_or_value)
+          end
+        end
+      end
+    end
+
+    def valid_hash_key(hash, key)
+      hash.is_a?(Hash) && hash.key?(key)
     end
   end
 end

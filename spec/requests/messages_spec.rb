@@ -24,7 +24,7 @@ RSpec.describe 'Messages API', type: :request do
   let(:convo_id) { root_conversation.id }
 
   let(:conversation_messages) do
-    rand(2..5).times.each do
+    rand(2..5).times.map do
       create(:chat_message,
              conversation: user_conversation[:conversation],
              conversation_membership: user_conversation[:members].sample)
@@ -33,7 +33,10 @@ RSpec.describe 'Messages API', type: :request do
 
   describe 'get list of messages' do
     context 'when user have conversation with other user' do
-      before { get "/conversations/#{convo_id}/messages", params: {}, headers: dimas_headers }
+      before do
+        conversation_messages
+        get "/conversations/#{convo_id}/messages", params: {}, headers: dimas_headers
+      end
 
       it 'returns list all messages in conversation' do
         expect_response(
@@ -107,7 +110,10 @@ RSpec.describe 'Messages API', type: :request do
     end
 
     context 'when create message into existing conversation' do
-      before { post '/messages', params: valid_attributes, headers: dimas_headers }
+      before do
+        conversation_messages
+        post '/messages', params: valid_attributes, headers: dimas_headers
+      end
 
       it 'returns status code 201 (created) and create conversation automatically' do
         expect_response(

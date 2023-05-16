@@ -16,7 +16,15 @@ class ChatMessage < ApplicationRecord
   default_scope { order(created_at: :desc, updated_at: :desc) }
 
   def include_message
-    as_json({ except: %i[conversation_membership_id conversation_id body created_at updated_at] })
+    json = as_json
+    json[:message] = message
+    json
+  end
+
+  def after_send_message
+    json = include_message
+    json[:conversation] = conversation.id_and_with_user
+    json
   end
 
   def sender

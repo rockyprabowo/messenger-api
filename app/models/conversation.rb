@@ -20,6 +20,13 @@ class Conversation < ApplicationRecord
         .present?
   end
 
+  def id_and_with_user
+    {
+      id: id,
+      with_user: with_user
+    }
+  end
+
   def with_user
     users.reject { |m| m.id == Current.user.id }
          .first || Current.user

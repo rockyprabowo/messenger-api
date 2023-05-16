@@ -9,4 +9,4 @@ The challenge is make sure when you run `bundle exec rspec`, all result is green
 * Bundle v2.1.4
 
 ### Test Result
-![Screenshot of RSpec successful test run on a Konsole terminal](assets/Screenshot_20230516_055325.png)
+![Screenshot of RSpec successful test run on a Konsole terminal](assets/Screenshot_20230517_044504.png)

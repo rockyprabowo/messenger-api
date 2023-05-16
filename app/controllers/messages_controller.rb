@@ -75,6 +75,7 @@ class MessagesController < ApplicationController
   end
 
   def new_message_response
-    @new_message.include_message
+    message = ChatMessage.includes(:conversation).find(@new_message.id)
+    message.after_send_message
   end
 end

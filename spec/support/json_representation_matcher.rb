@@ -17,32 +17,32 @@ module RequestSpecHelper
     failure_message do |actual|
       "expected #{actual} to be the JSON representation of #{expected}"
     end
+  end
 
-    def traverse_structure(actual, expected)
-      expected.each do |key, type_or_value|
-        is_a_hash_item = valid_hash_key(actual, key)
-        case type_or_value
-        when Hash
-          return false unless is_a_hash_item && traverse_structure(actual[key], type_or_value)
-        when Array
-          next if type_or_value.eql?([]) && actual[key].eql?([])
+  def traverse_structure(actual, expected)
+    expected.each do |key, type_or_value|
+      is_a_hash_item = valid_hash_key(actual, key)
+      case type_or_value
+      when Hash
+        return false unless is_a_hash_item && traverse_structure(actual[key], type_or_value)
+      when Array
+        next if type_or_value.eql?([]) && actual[key].eql?([])
 
-          return false unless actual[key].is_a?(Array) &&
-                              actual[key].each do |item|
-                                break false unless traverse_structure(item, type_or_value.first)
-                              end
-        else
-          begin
-            return false unless is_a_hash_item && actual[key].is_a?(type_or_value)
-          rescue StandardError => _e
-            return false unless is_a_hash_item && actual[key].eql?(type_or_value)
-          end
+        return false unless actual[key].is_a?(Array) &&
+                            actual[key].each do |item|
+                              break false unless traverse_structure(item, type_or_value.first)
+                            end
+      else
+        begin
+          return false unless is_a_hash_item && actual[key].is_a?(type_or_value)
+        rescue StandardError => _e
+          return false unless is_a_hash_item && actual[key].eql?(type_or_value)
         end
       end
     end
+  end
 
-    def valid_hash_key(hash, key)
-      hash.is_a?(Hash) && hash.key?(key)
-    end
+  def valid_hash_key(hash, key)
+    hash.is_a?(Hash) && hash.key?(key)
   end
 end

@@ -2,10 +2,10 @@
 
 class MessagesController < ApplicationController
   include Authorization
-  before_action :target_user_exists
+  before_action :load_target_user
 
   def create
-    if user_had_conversation_with @target_user
+    if user_had_conversation_with? @target_user
       send_to_existing_conversation
       json_response new_message_response, :created
       return
@@ -16,11 +16,11 @@ class MessagesController < ApplicationController
 
   private
 
-  def target_user_exists
+  def load_target_user
     @target_user = User.find(params[:user_id])
   end
 
-  def user_had_conversation_with(user)
+  def user_had_conversation_with?(user)
     @existing_id = ConversationMembership
                    .between_users(user_ids: [Current.user.id, user.id])
                    .pluck(:conversation_id)
@@ -75,7 +75,6 @@ class MessagesController < ApplicationController
   end
 
   def new_message_response
-    message = ChatMessage.includes(:conversation).find(@new_message.id)
-    message.after_send_message
+    @new_message.after_send_message
   end
 end

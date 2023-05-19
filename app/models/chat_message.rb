@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ChatMessage < ApplicationRecord
   include ActiveModel::Serializers::JSON
 
@@ -16,9 +18,7 @@ class ChatMessage < ApplicationRecord
   default_scope { order(created_at: :desc, updated_at: :desc) }
 
   def include_message
-    json = as_json
-    json[:message] = message
-    json
+    as_json({ methods: :message })
   end
 
   def after_send_message

@@ -20,13 +20,15 @@ module RequestSpecHelper
 
     def traverse_structure(actual, expected)
       expected.each do |key, type_or_value|
+        # puts "\n| #{key} : #{type_or_value} |\n\n#{actual}\n\n==="
         case type_or_value
         when Hash
           return false unless valid_hash_key(actual, key) && traverse_structure(actual[key], type_or_value)
         when Array
           next if type_or_value.eql?([]) && actual[key].eql?([])
 
-          return false unless actual[key].is_a?(Array) && traverse_structure(actual[key].first, type_or_value.first)
+          return false unless actual[key].is_a?(Array) &&
+                              actual[key].each { |item| traverse_structure(item, type_or_value.first) }
         else
           begin
             return false unless valid_hash_key(actual, key) && actual[key].is_a?(type_or_value)

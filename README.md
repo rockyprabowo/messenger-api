@@ -8,5 +8,7 @@ The challenge is make sure when you run `bundle exec rspec`, all result is green
 * Database postgreSQL
 * Bundle v2.1.4
 
-### Test Result
+## Test Result
+> **Note**: I've done making extra feature and fixes after the time limit. Please check `post-test` branch.
+
 ![Screenshot of RSpec successful test run on a Konsole terminal](assets/Screenshot_20230517_044504.png)
